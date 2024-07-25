@@ -1,3 +1,14 @@
+"""
+export FLASK_APP=flaskthing
+export FLASK_DEBUG=1
+flask run
+
+==
+
+from flaskthing import db, create_app, models
+with create_app().app_context():
+    create_all()
+"""
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
