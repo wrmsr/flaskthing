@@ -1,14 +1,26 @@
+from flask import Blueprint
+from flask import flash
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import url_for
+from flask_login import login_required
 from flask_login import login_user
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
+from flask_login import logout_user
+from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash
+
 from . import db
+from .models import User
+
 
 auth = Blueprint('auth', __name__)
+
 
 @auth.route('/login')
 def login():
     return render_template('login.html')
+
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -28,9 +40,11 @@ def login_post():
     login_user(user, remember=remember)
     return redirect(url_for('main.profile'))
 
+
 @auth.route('/signup')
 def signup():
     return render_template('signup.html')
+
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
@@ -38,7 +52,8 @@ def signup_post():
     name = request.form.get('name')
     password = request.form.get('password')
 
-    user = User.query.filter_by(email=email).first()  # if this returns a user, then the email already exists in database
+    user = User.query.filter_by(
+        email=email).first()  # if this returns a user, then the email already exists in database
 
     if user:  # if a user is found, we want to redirect back to signup page so user can try again
         flash('Email address already exists')
@@ -53,6 +68,9 @@ def signup_post():
 
     return redirect(url_for('auth.login'))
 
+
 @auth.route('/logout')
+@login_required
 def logout():
-    return 'Logout'
+    logout_user()
+    return redirect(url_for('main.index'))
